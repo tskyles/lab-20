@@ -3,7 +3,10 @@
 const uuid = require('uuid/v4');
 const io = require('socket.io')(3001);
 
-const messages = {};
+const queues = {
+  flowers: [],
+  acme: [],
+};
 
 io.on('connection', socket => {
   console.log('Connected', socket.id);
@@ -17,43 +20,23 @@ retailers.on('connection', socket => {
   socket.on('join', room => {
     console.log('joined', room);
     socket.join(room);
+    retailers.to(room).emit('queued', queues[room]);
   });
 
   socket.on('received', payload => {
-    let { messageID, event, clientID} = payload;
-    delete messages[event][clientID][messageID];
+    if(payload === 'acme') queues.acme.shift();
+    if(payload === 'flowers') queues.flowers.shift();
   });
   
   socket.on('package-delivery', payload => {
-    let content = {
-      messageID: uuid(),
-      payload: payload,
-    };
-    retailers.to('acme-widget').emit('package-delivery', content);
-    retailers.to('flowers-r-us').emit('package-delivery', content);
-  });
-
-  socket.on('getAll', (data)=> {
-
-    try{
-      let { event, clientID} = data;
-      for (const messageID in messages[event][clientID]) {
-        let payload = messages[event][clientID][messageID];
-        console.log('sending to', clientID, event);
-        io.of('/cfps').to(clientID).emit(event, {messageID, payload});
-      }
+    if (payload.retailer === 'acme') {
+      queues.acme.push(payload);
+      socket.to('acme').emit('package-delivery', payload)
     }
-    catch(e) {console.error(e);}
-  });
 
-  socket.on('subscribe', payload => {
-    let {event,clientID} = payload;
-    
-
-    if (!messages[event]) { messages[event] = {}; }
-    if (!messages[event][clientID]) { messages[event][clientID] = {}; }
-    console.log('joined', clientID);
-    socket.join(clientID);
-
+    if(payload.retailer === 'flowers') {
+      queues.flowers.push(payload)
+      socket.to('flowers').emit('package-delivery', payload)
+    }
   });
 });
