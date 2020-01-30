@@ -18,6 +18,11 @@ retailers.on('connection', socket => {
     console.log('joined', room);
     socket.join(room);
   });
+
+  socket.on('received', payload => {
+    let { messageID, event, clientID} = payload;
+    delete messages[event][clientID][messageID];
+  });
   
   socket.on('package-delivery', payload => {
     let content = {
@@ -28,13 +33,14 @@ retailers.on('connection', socket => {
     retailers.to('flowers-r-us').emit('package-delivery', content);
   });
 
-  socket.on('getall', (data)=> {
+  socket.on('getAll', (data)=> {
+
     try{
       let { event, clientID} = data;
       for (const messageID in messages[event][clientID]) {
         let payload = messages[event][clientID][messageID];
         console.log('sending to', clientID, event);
-        io.of('cfps').to(clientID).emit(event, {messageID, payload});
+        io.of('/cfps').to(clientID).emit(event, {messageID, payload});
       }
     }
     catch(e) {console.error(e);}
@@ -42,6 +48,7 @@ retailers.on('connection', socket => {
 
   socket.on('subscribe', payload => {
     let {event,clientID} = payload;
+    
 
     if (!messages[event]) { messages[event] = {}; }
     if (!messages[event][clientID]) { messages[event][clientID] = {}; }

@@ -5,7 +5,7 @@ const apiServer = io.connect('http://localhost:3001/cfps');
 const express = require('express');
 const app = express();
 
-app.get('/', (req, res) => {
+app.get('/home', (req, res) => {
   res.send('OK');
 });
 
@@ -20,4 +20,7 @@ app.post('/delivery/:retailer/:code', (req, res, next) => {
   res.json(content);
 });
 
+
 app.listen(3000, () => console.log('Listening on 3000'));
+
+module.exports = app;
