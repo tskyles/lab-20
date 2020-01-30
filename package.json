@@ -2,7 +2,7 @@
   "name": "class-19",
   "version": "1.0.0",
   "description": "## Project Name",
-  "main": "index.js",
+  "main": "cfps-server.js",
   "directories": {
     "doc": "docs"
   },
@@ -25,6 +25,8 @@
     "jest": "^25.1.0",
     "mongoose": "^5.8.10",
     "morgan": "^1.9.1",
+    "socket.io": "^2.3.0",
+    "socket.io-client": "^2.3.0",
     "swagger-ui-express": "^4.1.3"
   }
 }
