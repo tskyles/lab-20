@@ -1,18 +1,29 @@
 'use server';
 
-const io = require('socket.io')(3000);
+const uuid = require('uuid/v4');
+const io = require('socket.io')(3001);
 
 io.on('connection', socket => {
 
-  console.log('Connected', socket.id)
+  console.log('Connected', socket.id);
 
 });
 
-io.of('/cfps', socket => {
+const retailers = io.of('/cfps');
 
-  socket.on()
+retailers.on('connection', socket => {
+  console.log('Delivery Service', socket.id);
 
-
-
-})
-
+  socket.on('join', room => {
+    console.log('joined', room);
+    socket.join(room);
+  });
+  
+  socket.on('package-delivery', payload => {
+    let content = {
+      messageID: uuid(),
+      payload: payload,
+    };
+    retailers.to('retailers').emit('package-delivery', content);
+  });
+});

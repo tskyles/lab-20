@@ -1,9 +1,13 @@
 'use strict';
 
 const io = require('socket.io-client');
-const apiServer = io.connect('http://localhost:3000/cfps');
+const apiServer = io.connect('http://localhost:3001/cfps');
 const express = require('express');
 const app = express();
+
+app.get('/', (req, res) => {
+  res.send('OK');
+});
 
 app.post('/delivery/:retailer/:code', (req, res, next) => {
   let {retailer} = req.params;
@@ -12,10 +16,8 @@ app.post('/delivery/:retailer/:code', (req, res, next) => {
     retailer: retailer,
     code: code,
   };
-  console.log(content)
-  apiServer.emit('package-delivered', content);
+  apiServer.emit('package-delivery', content);
+  res.json(content);
 });
 
 app.listen(3000, () => console.log('Listening on 3000'));
-
-
