@@ -1,9 +1,11 @@
 'use strict';
 
 const io = require('socket.io-client');
-const acme = io.connect('http://localhost:3001/cfps');
+const cfps = io.connect('http://localhost:3001/cfps');
 
+cfps.emit('join', 'acme');
 
-acme.on('package-delivery', payload => {
-  if (payload.payload.retailer === 'acme-widget') console.log('Delivered', payload);
+cfps.on('package-delivery', payload => {
+  console.log(payload);
+  cfps.emit('received', payload);
 });

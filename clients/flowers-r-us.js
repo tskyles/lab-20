@@ -1,11 +1,13 @@
 'use strict';
 
 const io = require('socket.io-client');
-const flowers = io.connect('http://localhost:3001/cfps');
+const cfps = io.connect('http://localhost:3001/cfps');
 
-flowers.emit('subscribe', { event: 'Delivered', clientID: 'flowers-r-us'});
-flowers.emit('getAll', { event: 'Delivered', clientID: 'flowers-r-us'});
+cfps.emit('join', 'flowers')
 
-flowers.on('package-delivery', payload => {
-  if (payload.payload.retailer === 'flowers-r-us') console.log('Delivered', payload);
+// cfps.on('received')
+
+cfps.on('package-delivery', payload => {
+  console.log(payload);
+  cfps.emit('received', payload);
 });

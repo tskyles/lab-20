@@ -31,12 +31,12 @@ retailers.on('connection', socket => {
   socket.on('package-delivery', payload => {
     if (payload.retailer === 'acme') {
       queues.acme.push(payload);
-      socket.to('acme').emit('package-delivery', payload)
+      socket.to('acme').emit('package-delivery', payload);
     }
 
     if(payload.retailer === 'flowers') {
       queues.flowers.push(payload)
-      socket.to('flowers').emit('package-delivery', payload)
+      socket.to('flowers').emit('package-delivery', payload);
     }
   });
 });
