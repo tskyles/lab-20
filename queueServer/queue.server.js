@@ -24,7 +24,20 @@ retailers.on('connection', socket => {
       messageID: uuid(),
       payload: payload,
     };
-    retailers.to('retailers').emit('package-delivery', content);
+    retailers.to('acme-widget').emit('package-delivery', content);
+    retailers.to('flowers-r-us').emit('package-delivery', content);
+  });
+
+  socket.on('getall', (data)=> {
+    try{
+      let { event, clientID} = data;
+      for (const messageID in messages[event][clientID]) {
+        let payload = messages[event][clientID][messageID];
+        console.log('sending to', clientID, event);
+        io.of('cfps').to(clientID).emit(event, {messageID, payload});
+      }
+    }
+    catch(e) {console.error(e);}
   });
 
   socket.on('subscribe', payload => {
