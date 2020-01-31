@@ -1,6 +1,5 @@
 'use server';
 
-const uuid = require('uuid/v4');
 const io = require('socket.io')(3001);
 
 const queues = {
@@ -35,7 +34,7 @@ retailers.on('connection', socket => {
     }
 
     if(payload.retailer === 'flowers') {
-      queues.flowers.push(payload)
+      queues.flowers.push(payload);
       socket.to('flowers').emit('package-delivery', payload);
     }
   });
